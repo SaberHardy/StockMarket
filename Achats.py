@@ -94,5 +94,24 @@ edit_button.place(x=1000, y=240, width=200)
 edit_button = Button(root, text="Return", font=("Arial", 16), bg="white", fg="red", command=Return)
 edit_button.place(x=1240, y=240, width=100)
 
+# Create Table
+
+table = ttk.Treeview(root, columns=(1, 2, 3, 4, 5, 6), height=10, show='headings')
+table.place(x=0, y=290, width=1350, height=700)
+
+table.heading(1, text="Code Achat")
+table.heading(2, text="Fourniseur")
+table.heading(3, text="Telephone")
+table.heading(4, text="Produit")
+table.heading(5, text="Prix")
+table.heading(6, text="Quantity")
+
+# Columns Dimension
+table.column(1, width=50)
+table.column(2, width=150)
+table.column(3, width=150)
+table.column(4, width=100)
+table.column(5, width=50)
+table.column(6, width=50)
 
 root.mainloop()
