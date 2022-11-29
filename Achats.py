@@ -7,19 +7,104 @@ import mysql.connector
 
 
 def Save():
-    pass
+    matricule = txtNumber.get()
+    forniseur = txtForniseur.get()
+    telephone = txtTelephone.get()
+    produit = comboproduit.get()
+    prix_achat = txtPrix.get()
+    quantite = txtQuantity.get()
+
+    db = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='',
+        database='achat'
+    )
+    connect = db.cursor()
+
+    try:
+        sql = "INSERT INTO tb_achat (code, fourneseur, telephone, produit, prix, quantite) VALUES (%s, %s, %s, %s, %s, %s)"
+        val = (matricule, forniseur, telephone, produit, prix_achat, quantite)
+
+        connect.execute(sql, val)
+        db.commit()
+
+        dernierMatricule = connect.lastrowid
+        messagebox.showinfo("Information", "Achat ajouter")
+        root.destroy()
+
+        call(['python', 'Achats.py'])
+
+    except Exception as e:
+        print(e)
+        db.rollback()
+        db.close()
 
 
 def Edit():
-    pass
+    matricule = txtNumber.get()
+    forniseur = txtForniseur.get()
+    telephone = txtTelephone.get()
+    produit = comboproduit.get()
+    prix_achat = txtPrix.get()
+    quantite = txtQuantity.get()
+
+    db = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='',
+        database='achat'
+    )
+    connect = db.cursor()
+
+    try:
+        sql = "update tb_achat set fourneseur=%s, telephone=%s, produit=%s, prix=%s, quantite=%s WHERE code=%s"
+        val = (forniseur, telephone, produit, prix_achat, quantite, matricule)
+
+        connect.execute(sql, val)
+        db.commit()
+
+        dernierMatricule = connect.lastrowid
+        messagebox.showinfo("Information", "Achat ajouter")
+        root.destroy()
+
+        call(['python', 'Achats.py'])
+
+    except Exception as e:
+        print(e)
+        db.rollback()
+        db.close()
 
 
 def Return():
-    pass
+    root.destroy()
+    call(['python', 'main.py'])
 
 
 def Delete():
-    pass
+    matricule = txtNumber.get()
+
+    db = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='',
+        database='achat'
+    )
+    connect = db.cursor()
+
+    try:
+        sql = "delete from tb_achat where code=%s"
+        val = (matricule,)
+        connect.execute(sql, val)
+        db.commit()
+        dernierMatricule = connect.lastrowid
+        messagebox.showinfo("Information", "Achat Supprimer")
+        root.destroy()
+        call(['python', 'Achats.py'])
+    except Exception as e:
+        print(e)
+        db.rollback()
+        db.close()
 
 
 root = Tk()
@@ -73,10 +158,10 @@ txtPrix = Entry(root, font=('Arial', 14))
 txtPrix.place(x=700, y=200, width=150)
 
 # Quantity
-lblPrix = Label(root, text="Quantity".upper(), font=("Arial", 18), bg="#808080", fg="white")
-lblPrix.place(x=550, y=250, width=150)
-txtPrix = Entry(root, font=('Arial', 14))
-txtPrix.place(x=700, y=250, width=150)
+lblQuantity = Label(root, text="Quantity".upper(), font=("Arial", 18), bg="#808080", fg="white")
+lblQuantity.place(x=550, y=250, width=150)
+txtQuantity = Entry(root, font=('Arial', 14))
+txtQuantity.place(x=700, y=250, width=150)
 
 # add button
 add_button = Button(root, text="Save", font=("Arial", 16), bg="#483D8B", fg="black", command=Save)
@@ -113,5 +198,15 @@ table.column(3, width=150)
 table.column(4, width=100)
 table.column(5, width=50)
 table.column(6, width=50)
+
+# Retrieve from Database
+db = mysql.connector.connect(host='localhost', user='root', password='12345', database='achat')
+connect = db.cursor()
+connect.execute('select * from tb_achat')
+
+for row in connect:
+    table.insert('', END, values=row)
+
+db.close()
 
 root.mainloop()
