@@ -1,5 +1,111 @@
+import csv
 from tkinter import *
 from tkinter import ttk
+import sqlite3
+
+# Configure DB
+# Create or connect to database
+
+conn = sqlite3.connect('tree_crm.db')
+# create cursor to database
+cursor = conn.cursor()
+
+# Create Table for our database
+
+cursor.execute(
+    """
+    CREATE TABLE if not exists customers(
+    first_name text, 
+    last_name text,
+    id integer,
+    address text,
+    city text,
+    state text,
+    zipcode text)
+    """
+)
+
+# Add Fake Data
+"""
+data = [
+    ["John", "Elder", 1, "123 Elder St.", "Las Vegas", "NV", "89137"],
+    ["Mary", "Smith", 2, "435 West Lookout", "Chicago", "IL", "60610"],
+    ["Tim", "Tanaka", 3, "246 Main St.", "New York", "NY", "12345"],
+    ["Erin", "Erinton", 4, "333 Top Way.", "Los Angeles", "CA", "90210"],
+    ["Bob", "Bobberly", 5, "876 Left St.", "Memphis", "TN", "34321"],
+    ["Steve", "Smith", 6, "1234 Main St.", "Miami", "FL", "12321"],
+    ["Tina", "Browne", 7, "654 Street Ave.", "Chicago", "IL", "60611"],
+    ["Mark", "Lane", 8, "12 East St.", "Nashville", "TN", "54345"],
+    ["John", "Smith", 9, "678 North Ave.", "St. Louis", "MO", "67821"],
+    ["Mary", "Todd", 10, "9 Elder Way.", "Dallas", "TX", "88948"],
+    ["John", "Lincoln", 11, "123 Elder St.", "Las Vegas", "NV", "89137"],
+    ["Mary", "Bush", 12, "435 West Lookout", "Chicago", "IL", "60610"],
+    ["Tim", "Reagan", 13, "246 Main St.", "New York", "NY", "12345"],
+    ["Erin", "Smith", 14, "333 Top Way.", "Los Angeles", "CA", "90210"],
+    ["Bob", "Field", 15, "876 Left St.", "Memphis", "TN", "34321"],
+    ["Steve", "Target", 16, "1234 Main St.", "Miami", "FL", "12321"],
+    ["Tina", "Walton", 17, "654 Street Ave.", "Chicago", "IL", "60611"],
+    ["Mark", "Erendale", 18, "12 East St.", "Nashville", "TN", "54345"],
+    ["John", "Nowerton", 19, "678 North Ave.", "St. Louis", "MO", "67821"],
+    ["Mary", "Hornblower", 20, "9 Elder Way.", "Dallas", "TX", "88948"]
+
+]
+"""
+
+# add data to db
+'''
+for record in data:
+    conn.execute("INSERT INTO customers VALUES ("
+                 ":first_name,"
+                 ":last_name,"
+                 ":id,"
+                 ":address,"
+                 ":city,"
+                 ":state,"
+                 ":zipcode)",
+
+                 {
+                     'first_name': record[0],
+                     'last_name': record[1],
+                     'id': record[2],
+                     'address': record[3],
+                     'city': record[4],
+                     'state': record[5],
+                     'zipcode': record[6],
+                 }
+                 )
+'''
+conn.commit()
+conn.close()
+
+
+def query_database():
+    conn = sqlite3.connect('tree_crm.db')
+    # create cursor to database
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM customers")
+
+    records = cursor.fetchall()
+    print(records)
+    global count
+    count = 0
+
+    for record in records:
+        if count % 2 == 0:
+            my_tree.insert(parent='', index='end', iid=count, text='',
+                           values=(record[0], record[1], record[2], record[3], record[4], record[5], record[6]),
+                           tags=('evenrow',))
+        else:
+            my_tree.insert(parent='', index='end', iid=count, text='',
+                           values=(record[0], record[1], record[2], record[3], record[4], record[5], record[6]),
+                           tags=('oddrow',))
+        # increment counter
+        count += 1
+
+    conn.commit()
+    conn.close()
+
 
 root = Tk()
 root.title('CRM Project TreeBase')
@@ -60,50 +166,9 @@ my_tree.heading("City", text="City", anchor=CENTER)
 my_tree.heading("State", text="State", anchor=CENTER)
 my_tree.heading("Zipcode", text="Zipcode", anchor=CENTER)
 
-# Add Fake Data
-data = [
-    ["John", "Elder", 1, "123 Elder St.", "Las Vegas", "NV", "89137"],
-    ["Mary", "Smith", 2, "435 West Lookout", "Chicago", "IL", "60610"],
-    ["Tim", "Tanaka", 3, "246 Main St.", "New York", "NY", "12345"],
-    ["Erin", "Erinton", 4, "333 Top Way.", "Los Angeles", "CA", "90210"],
-    ["Bob", "Bobberly", 5, "876 Left St.", "Memphis", "TN", "34321"],
-    ["Steve", "Smith", 6, "1234 Main St.", "Miami", "FL", "12321"],
-    ["Tina", "Browne", 7, "654 Street Ave.", "Chicago", "IL", "60611"],
-    ["Mark", "Lane", 8, "12 East St.", "Nashville", "TN", "54345"],
-    ["John", "Smith", 9, "678 North Ave.", "St. Louis", "MO", "67821"],
-    ["Mary", "Todd", 10, "9 Elder Way.", "Dallas", "TX", "88948"],
-    ["John", "Lincoln", 11, "123 Elder St.", "Las Vegas", "NV", "89137"],
-    ["Mary", "Bush", 12, "435 West Lookout", "Chicago", "IL", "60610"],
-    ["Tim", "Reagan", 13, "246 Main St.", "New York", "NY", "12345"],
-    ["Erin", "Smith", 14, "333 Top Way.", "Los Angeles", "CA", "90210"],
-    ["Bob", "Field", 15, "876 Left St.", "Memphis", "TN", "34321"],
-    ["Steve", "Target", 16, "1234 Main St.", "Miami", "FL", "12321"],
-    ["Tina", "Walton", 17, "654 Street Ave.", "Chicago", "IL", "60611"],
-    ["Mark", "Erendale", 18, "12 East St.", "Nashville", "TN", "54345"],
-    ["John", "Nowerton", 19, "678 North Ave.", "St. Louis", "MO", "67821"],
-    ["Mary", "Hornblower", 20, "9 Elder Way.", "Dallas", "TX", "88948"]
-
-]
-
 # Create Striped Row Tags
 my_tree.tag_configure('oddrow', background="white")
 my_tree.tag_configure('evenrow', background="lightblue")
-
-# Add our data to the screen
-global count
-count = 0
-
-for record in data:
-    if count % 2 == 0:
-        my_tree.insert(parent='', index='end', iid=count, text='',
-                       values=(record[0], record[1], record[2], record[3], record[4], record[5], record[6]),
-                       tags=('evenrow',))
-    else:
-        my_tree.insert(parent='', index='end', iid=count, text='',
-                       values=(record[0], record[1], record[2], record[3], record[4], record[5], record[6]),
-                       tags=('oddrow',))
-    # increment counter
-    count += 1
 
 # Add Record Entry Boxes
 data_frame = LabelFrame(root, text="Record".upper())
@@ -156,13 +221,7 @@ def clear_entries():
 
 
 def select_record(e):
-    fn_entry.delete(0, END)
-    ln_entry.delete(0, END)
-    id_entry.delete(0, END)
-    address_entry.delete(0, END)
-    city_entry.delete(0, END)
-    state_entry.delete(0, END)
-    zipcode_entry.delete(0, END)
+    clear_entries()
 
     # Grab record number
     selected = my_tree.focus()
@@ -252,5 +311,8 @@ select_record_button.grid(row=0, column=7, padx=10, pady=10)
 
 # BInd the treeview
 my_tree.bind("<ButtonRelease-1>", select_record)
+
+# Run to pull data from database when the program starts
+query_database()
 
 root.mainloop()
