@@ -178,29 +178,73 @@ def select_record(e):
     zipcode_entry.insert(0, values[6])
 
 
+def move_up():
+    rows = my_tree.selection()
+    for row in rows:
+        my_tree.move(row, my_tree.parent(row), my_tree.index(row) - 1)
+
+
+def move_down():
+    rows = my_tree.selection()
+    for row in reversed(rows):
+        my_tree.move(row, my_tree.parent(row), my_tree.index(row) + 1)
+
+
+def remove_one():
+    x = my_tree.selection()[0]
+    my_tree.delete(x)
+
+
+def remove_many():
+    x = my_tree.selection()
+    for o in x:
+        my_tree.delete(o)
+
+
+def remove_all():
+    for record in my_tree.get_children():
+        my_tree.delete(record)
+
+
+def update():
+    selected = my_tree.focus()
+    # update the record
+    my_tree.item(selected, text="", values=(
+        fn_entry.get(),
+        ln_entry.get(),
+        id_entry.get(),
+        address_entry.get(),
+        city_entry.get(),
+        state_entry.get(),
+        zipcode_entry.get(),
+    ))
+
+    clear_entries()
+
+
 # Create Buttons
 button_frame = LabelFrame(root, text="Commands")
 button_frame.pack(fill="x", expand="yes", padx=20)
 
-update_button = Button(button_frame, text="Update Record")
+update_button = Button(button_frame, text="Update Record", command=update)
 update_button.grid(row=0, column=0, padx=10, pady=10)
 
 add_button = Button(button_frame, text="Add Record")
 add_button.grid(row=0, column=1, padx=10, pady=10)
 
-remove_all_button = Button(button_frame, text="Remove All Records")
+remove_all_button = Button(button_frame, text="Remove All Records", command=remove_all)
 remove_all_button.grid(row=0, column=2, padx=10, pady=10)
 
-remove_one_button = Button(button_frame, text="Remove One Selected")
+remove_one_button = Button(button_frame, text="Remove One Selected", command=remove_one)
 remove_one_button.grid(row=0, column=3, padx=10, pady=10)
 
-remove_many_button = Button(button_frame, text="Remove Many Selected")
+remove_many_button = Button(button_frame, text="Remove Many Selected", command=remove_many)
 remove_many_button.grid(row=0, column=4, padx=10, pady=10)
 
-move_up_button = Button(button_frame, text="Move Up")
+move_up_button = Button(button_frame, text="Move Up", command=move_up)
 move_up_button.grid(row=0, column=5, padx=10, pady=10)
 
-move_down_button = Button(button_frame, text="Move Down")
+move_down_button = Button(button_frame, text="Move Down", command=move_down)
 move_down_button.grid(row=0, column=6, padx=10, pady=10)
 
 select_record_button = Button(button_frame, text="Clear Entries", command=clear_entries)
