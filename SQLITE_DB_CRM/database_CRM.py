@@ -145,7 +145,17 @@ zipcode_entry = Entry(data_frame)
 zipcode_entry.grid(row=1, column=7, padx=10, pady=10)
 
 
-def select_record():
+def clear_entries():
+    fn_entry.delete(0, END)
+    ln_entry.delete(0, END)
+    id_entry.delete(0, END)
+    address_entry.delete(0, END)
+    city_entry.delete(0, END)
+    state_entry.delete(0, END)
+    zipcode_entry.delete(0, END)
+
+
+def select_record(e):
     fn_entry.delete(0, END)
     ln_entry.delete(0, END)
     id_entry.delete(0, END)
@@ -193,7 +203,10 @@ move_up_button.grid(row=0, column=5, padx=10, pady=10)
 move_down_button = Button(button_frame, text="Move Down")
 move_down_button.grid(row=0, column=6, padx=10, pady=10)
 
-select_record_button = Button(button_frame, text="Select Record", command=select_record)
+select_record_button = Button(button_frame, text="Clear Entries", command=clear_entries)
 select_record_button.grid(row=0, column=7, padx=10, pady=10)
+
+# BInd the treeview
+my_tree.bind("<ButtonRelease-1>", select_record)
 
 root.mainloop()
