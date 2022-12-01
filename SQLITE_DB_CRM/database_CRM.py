@@ -259,6 +259,8 @@ def remove_many():
     for o in x:
         my_tree.delete(o)
 
+    clear_entries()
+
 
 def remove_all():
     for record in my_tree.get_children():
@@ -310,6 +312,38 @@ def update():
     clear_entries()
 
 
+def add():
+    # Add item to the database
+    if fn_entry.get() != "" or ln_entry.get() != "" or id_entry.get() != "" or \
+            address_entry.get() != "" or city_entry.get() != "" \
+            or state_entry.get() != "" or zipcode_entry.get() != "":
+
+        conn = sqlite3.connect('tree_crm.db')
+        # create cursor to database
+        cursor = conn.cursor()
+
+        cursor.execute("INSERT INTO customers VALUES (:first,:last,:id,:address,:city,:state,:zipcode)",
+                       {
+                           'first': fn_entry.get(),
+                           'last': ln_entry.get(),
+                           'id': id_entry.get(),
+                           'address': address_entry.get(),
+                           'city': city_entry.get(),
+                           'state': state_entry.get(),
+                           'zipcode': zipcode_entry.get(),
+                       })
+        conn.commit()
+        conn.close()
+
+        clear_entries()
+
+        my_tree.delete(*my_tree.get_children())
+
+        query_database()
+    else:
+        print("One of your records is empty!?>>>>>")
+
+
 # Create Buttons
 button_frame = LabelFrame(root, text="Commands".upper())
 button_frame.pack(expand=True, anchor=CENTER)
@@ -317,7 +351,7 @@ button_frame.pack(expand=True, anchor=CENTER)
 update_button = Button(button_frame, text="Update Record", command=update)
 update_button.grid(row=0, column=0, padx=10, pady=10)
 
-add_button = Button(button_frame, text="Add Record")
+add_button = Button(button_frame, text="Add Record", command=add)
 add_button.grid(row=0, column=1, padx=10, pady=10)
 
 remove_all_button = Button(button_frame, text="Remove All Records", command=remove_all)
