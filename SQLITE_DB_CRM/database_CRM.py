@@ -84,7 +84,7 @@ def query_database():
     # create cursor to database
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM customers")
+    cursor.execute("SELECT rowid, * FROM customers")
 
     records = cursor.fetchall()
     print(records)
@@ -94,11 +94,11 @@ def query_database():
     for record in records:
         if count % 2 == 0:
             my_tree.insert(parent='', index='end', iid=count, text='',
-                           values=(record[0], record[1], record[2], record[3], record[4], record[5], record[6]),
+                           values=(record[1], record[2], record[0], record[4], record[5], record[6], record[7]),
                            tags=('evenrow',))
         else:
             my_tree.insert(parent='', index='end', iid=count, text='',
-                           values=(record[0], record[1], record[2], record[3], record[4], record[5], record[6]),
+                           values=(record[1], record[2], record[0], record[4], record[5], record[6], record[7]),
                            tags=('oddrow',))
         # increment counter
         count += 1
@@ -172,7 +172,7 @@ my_tree.tag_configure('evenrow', background="lightblue")
 
 # Add Record Entry Boxes
 data_frame = LabelFrame(root, text="Record".upper())
-data_frame.pack(fill="x", expand="yes", padx=20)
+data_frame.pack(expand=True, anchor=CENTER)
 
 fn_label = Label(data_frame, text="First Name")
 fn_label.grid(row=0, column=0, padx=10, pady=10)
@@ -225,7 +225,7 @@ def select_record(e):
 
     # Grab record number
     selected = my_tree.focus()
-    print(f"SELECTED, {selected}")
+    # print(f"SELECTED, {selected}")
     values = my_tree.item(selected, 'values')
 
     fn_entry.insert(0, values[0])
@@ -278,12 +278,41 @@ def update():
         zipcode_entry.get(),
     ))
 
+    # Update the database
+    conn = sqlite3.connect('tree_crm.db')
+    # create cursor to database
+    cursor = conn.cursor()
+
+    cursor.execute("""
+            UPDATE customers SET
+                first_name = :first,
+                last_name = :last,
+                address = :address,
+                city = :city,
+                state = :state,
+                zipcode = :zipcode 
+                
+                WHERE oid = :oid""",
+                   {
+                       'first': fn_entry.get(),
+                       'last': ln_entry.get(),
+                       'address': address_entry.get(),
+                       'city': city_entry.get(),
+                       'state': state_entry.get(),
+                       'zipcode': zipcode_entry.get(),
+                       'oid': id_entry.get()
+                   }
+                   )
+
+    conn.commit()
+    conn.close()
+
     clear_entries()
 
 
 # Create Buttons
-button_frame = LabelFrame(root, text="Commands")
-button_frame.pack(fill="x", expand="yes", padx=20)
+button_frame = LabelFrame(root, text="Commands".upper())
+button_frame.pack(expand=True, anchor=CENTER)
 
 update_button = Button(button_frame, text="Update Record", command=update)
 update_button.grid(row=0, column=0, padx=10, pady=10)
