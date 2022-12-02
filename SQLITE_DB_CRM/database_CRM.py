@@ -2,6 +2,7 @@ import csv
 from tkinter import *
 from tkinter import ttk
 import sqlite3
+from tkinter import messagebox
 
 # Configure DB
 # Create or connect to database
@@ -94,11 +95,11 @@ def query_database():
     for record in records:
         if count % 2 == 0:
             my_tree.insert(parent='', index='end', iid=count, text='',
-                           values=(record[1], record[2], record[0], record[4], record[5], record[6], record[7]),
+                           values=(record[0], record[1], record[2], record[4], record[5], record[6], record[7]),
                            tags=('evenrow',))
         else:
             my_tree.insert(parent='', index='end', iid=count, text='',
-                           values=(record[1], record[2], record[0], record[4], record[5], record[6], record[7]),
+                           values=(record[0], record[1], record[2], record[4], record[5], record[6], record[7]),
                            tags=('oddrow',))
         # increment counter
         count += 1
@@ -144,13 +145,13 @@ my_tree.pack()
 tree_scroll.config(command=my_tree.yview)
 
 # Define Our Columns
-my_tree['columns'] = ("First Name", "Last Name", "ID", "Address", "City", "State", "Zipcode")
+my_tree['columns'] = ("ID", "First Name", "Last Name",  "Address", "City", "State", "Zipcode")
 
 # Format Our Columns
 my_tree.column("#0", width=0, stretch=NO)
+my_tree.column("ID", anchor=CENTER, width=100)
 my_tree.column("First Name", anchor=W, width=140)
 my_tree.column("Last Name", anchor=W, width=140)
-my_tree.column("ID", anchor=CENTER, width=100)
 my_tree.column("Address", anchor=CENTER, width=140)
 my_tree.column("City", anchor=CENTER, width=140)
 my_tree.column("State", anchor=CENTER, width=140)
@@ -158,9 +159,9 @@ my_tree.column("Zipcode", anchor=CENTER, width=140)
 
 # Create Headings
 my_tree.heading("#0", text="", anchor=W)
+my_tree.heading("ID", text="ID", anchor=CENTER)
 my_tree.heading("First Name", text="First Name", anchor=W)
 my_tree.heading("Last Name", text="Last Name", anchor=W)
-my_tree.heading("ID", text="ID", anchor=CENTER)
 my_tree.heading("Address", text="Address", anchor=CENTER)
 my_tree.heading("City", text="City", anchor=CENTER)
 my_tree.heading("State", text="State", anchor=CENTER)
@@ -253,6 +254,17 @@ def remove_one():
     x = my_tree.selection()[0]
     my_tree.delete(x)
 
+    conn = sqlite3.connect('tree_crm.db')
+
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM customers WHERE oid=" + id_entry.get())
+
+    conn.commit()
+    conn.close()
+    clear_entries()
+
+    messagebox.showinfo("Deleted", "The row selected has been deleted!")
+
 
 def remove_many():
     x = my_tree.selection()
@@ -322,11 +334,11 @@ def add():
         # create cursor to database
         cursor = conn.cursor()
 
-        cursor.execute("INSERT INTO customers VALUES (:first,:last,:id,:address,:city,:state,:zipcode)",
+        cursor.execute("INSERT INTO customers VALUES (:id, :first,:last,:address,:city,:state,:zipcode)",
                        {
+                           'id': id_entry.get(),
                            'first': fn_entry.get(),
                            'last': ln_entry.get(),
-                           'id': id_entry.get(),
                            'address': address_entry.get(),
                            'city': city_entry.get(),
                            'state': state_entry.get(),
