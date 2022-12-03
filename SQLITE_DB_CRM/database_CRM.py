@@ -2,10 +2,11 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import sqlite3
+from tkmacosx import Button as BT
 
 root = Tk()
-root.title('Codemy.com - TreeBase')
-root.geometry("1500x500")
+root.title('TreeView Tkinter...')
+root.geometry("1500x700")
 
 conn = sqlite3.connect('tree_crm.db')
 
@@ -43,14 +44,57 @@ conn.close()
 
 
 def query_database():
+    # Clear the Treeview
+    for record in my_tree.get_children():
+        my_tree.delete(record)
+
+    # Create a database or connect to one that exists
+    conn = sqlite3.connect('tree_crm.db')
+
+    # Create a cursor instance
+    c = conn.cursor()
+
+    c.execute("SELECT rowid, * FROM customers")
+    records = c.fetchall()
+
+    # Add our data to the screen
+    global count
+    count = 0
+
+    # for record in records:
+    #	print(record)
+
+    for record in records:
+        if count % 2 == 0:
+            my_tree.insert(parent='', index='end', iid=count, text='',
+                           values=(record[1], record[2], record[0], record[4], record[5], record[6], record[7]),
+                           tags=('evenrow',))
+        else:
+            my_tree.insert(parent='', index='end', iid=count, text='',
+                           values=(record[1], record[2], record[0], record[4], record[5], record[6], record[7]),
+                           tags=('oddrow',))
+        # increment counter
+        count += 1
+
+    # Commit changes
+    conn.commit()
+
+    # Close our connection
+    conn.close()
+
+
+def search_records():
+    lookup_record = search_entry.get()
+
+    search.destroy()
+    for record in my_tree.get_children():
+        my_tree.delete(record)
+
     conn = sqlite3.connect('tree_crm.db')
     # create cursor to database
     cursor = conn.cursor()
 
-    # Create a cursor instance
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT rowid, * FROM customers")
+    cursor.execute("SELECT rowid, * FROM customers WHERE last_name like  ?", (lookup_record,))
     records = cursor.fetchall()
 
     # Add our data to the screen
@@ -72,6 +116,31 @@ def query_database():
     conn.commit()
     conn.close()
 
+
+def lookup_records():
+    global search_entry, search
+
+    search = Toplevel(root)
+    search.title("Search For Client")
+    search.geometry("400x200")
+    # search.iconbitmap()
+    search_frame = LabelFrame(search, text="LAst Name")
+    search_frame.pack(padx=10, pady=10)
+
+    search_entry = Entry(search_frame, font=("Arial", 24))
+    search_entry.pack(pady=20, padx=20)
+
+    search_button = Button(search, text="Search record", command=search_records)
+    search_button.pack(padx=20, pady=20)
+
+
+my_menu = Menu()
+root.config(menu=my_menu)
+
+option_menu = Menu(my_menu, tearoff=0)
+my_menu.add_cascade(label="Search", menu=option_menu)
+
+option_menu.add_command(label='Search Record', command=lookup_records)
 
 # Add Some Style
 style = ttk.Style()
@@ -370,22 +439,20 @@ def add():
     if fn_entry.get() != "" or ln_entry.get() != "" or id_entry.get() != "" or \
             address_entry.get() != "" or city_entry.get() != "" \
             or state_entry.get() != "" or zipcode_entry.get() != "":
-
         conn = sqlite3.connect('tree_crm.db')
         # create cursor to database
         cursor = conn.cursor()
 
-
         cursor.execute("INSERT INTO customers VALUES (:first, :last, :id, :address, :city, :state, :zipcode)",
-              {
-                  'first': fn_entry.get(),
-                  'last': ln_entry.get(),
-                  'id': id_entry.get(),
-                  'address': address_entry.get(),
-                  'city': city_entry.get(),
-                  'state': state_entry.get(),
-                  'zipcode': zipcode_entry.get(),
-              })
+                       {
+                           'first': fn_entry.get(),
+                           'last': ln_entry.get(),
+                           'id': id_entry.get(),
+                           'address': address_entry.get(),
+                           'city': city_entry.get(),
+                           'state': state_entry.get(),
+                           'zipcode': zipcode_entry.get(),
+                       })
 
         # Commit changes
         conn.commit()
@@ -448,6 +515,15 @@ move_down_button.grid(row=0, column=6, padx=10, pady=10)
 
 select_record_button = Button(button_frame, text="Clear Entries", command=clear_entries)
 select_record_button.grid(row=0, column=7, padx=10, pady=10)
+
+# exit_button = Button(button_frame, text="Exit", command=root.quit, fg="red")
+# exit_button.grid(row=1, column=3, padx=10, pady=10)
+
+reset_button = BT(button_frame, text='Reset Records', bg='#6AC6C6', fg='#000000', command=query_database)
+reset_button.grid(row=1, column=4, padx=10, pady=10)
+
+exit_button = BT(button_frame, text='Exit', bg='#00BF26', fg='#FFFFFF', command=root.quit)
+exit_button.grid(row=1, column=3, padx=10, pady=10)
 
 # BInd the treeview
 my_tree.bind("<ButtonRelease-1>", select_record)
