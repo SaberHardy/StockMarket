@@ -1,80 +1,42 @@
-import csv
 from tkinter import *
 from tkinter import ttk
-import sqlite3
 from tkinter import messagebox
+import sqlite3
 
-# Configure DB
-# Create or connect to database
+root = Tk()
+root.title('Codemy.com - TreeBase')
+root.geometry("1500x500")
 
 conn = sqlite3.connect('tree_crm.db')
-# create cursor to database
-cursor = conn.cursor()
 
-# Create Table for our database
+# Create a cursor instance
+c = conn.cursor()
 
-cursor.execute(
-    """
-    CREATE TABLE if not exists customers(
-    first_name text, 
-    last_name text,
-    id integer,
-    address text,
-    city text,
-    state text,
-    zipcode text)
-    """
-)
-
-# Add Fake Data
-"""
-data = [
-    ["John", "Elder", 1, "123 Elder St.", "Las Vegas", "NV", "89137"],
-    ["Mary", "Smith", 2, "435 West Lookout", "Chicago", "IL", "60610"],
-    ["Tim", "Tanaka", 3, "246 Main St.", "New York", "NY", "12345"],
-    ["Erin", "Erinton", 4, "333 Top Way.", "Los Angeles", "CA", "90210"],
-    ["Bob", "Bobberly", 5, "876 Left St.", "Memphis", "TN", "34321"],
-    ["Steve", "Smith", 6, "1234 Main St.", "Miami", "FL", "12321"],
-    ["Tina", "Browne", 7, "654 Street Ave.", "Chicago", "IL", "60611"],
-    ["Mark", "Lane", 8, "12 East St.", "Nashville", "TN", "54345"],
-    ["John", "Smith", 9, "678 North Ave.", "St. Louis", "MO", "67821"],
-    ["Mary", "Todd", 10, "9 Elder Way.", "Dallas", "TX", "88948"],
-    ["John", "Lincoln", 11, "123 Elder St.", "Las Vegas", "NV", "89137"],
-    ["Mary", "Bush", 12, "435 West Lookout", "Chicago", "IL", "60610"],
-    ["Tim", "Reagan", 13, "246 Main St.", "New York", "NY", "12345"],
-    ["Erin", "Smith", 14, "333 Top Way.", "Los Angeles", "CA", "90210"],
-    ["Bob", "Field", 15, "876 Left St.", "Memphis", "TN", "34321"],
-    ["Steve", "Target", 16, "1234 Main St.", "Miami", "FL", "12321"],
-    ["Tina", "Walton", 17, "654 Street Ave.", "Chicago", "IL", "60611"],
-    ["Mark", "Erendale", 18, "12 East St.", "Nashville", "TN", "54345"],
-    ["John", "Nowerton", 19, "678 North Ave.", "St. Louis", "MO", "67821"],
-    ["Mary", "Hornblower", 20, "9 Elder Way.", "Dallas", "TX", "88948"]
-
-]
-"""
-
-# add data to db
+# Create Table
+c.execute("""CREATE TABLE if not exists customers (
+            first_name text,
+            last_name text,
+            id integer,
+            address text,
+            city text,
+            state text,
+            zipcode text)
+            """)
+# Add dummy data to table
 '''
 for record in data:
-    conn.execute("INSERT INTO customers VALUES ("
-                 ":first_name,"
-                 ":last_name,"
-                 ":id,"
-                 ":address,"
-                 ":city,"
-                 ":state,"
-                 ":zipcode)",
-
-                 {
-                     'first_name': record[0],
-                     'last_name': record[1],
-                     'id': record[2],
-                     'address': record[3],
-                     'city': record[4],
-                     'state': record[5],
-                     'zipcode': record[6],
-                 }
-                 )
+            c.execute("INSERT INTO customers VALUES (:first_name, :last_name, :id, 
+            :address, :city, :state, :zipcode)", 
+                {
+                'first_name': record[0],
+                'last_name': record[1],
+                'id': record[2],
+                'address': record[3],
+                'city': record[4],
+                'state': record[5],
+                'zipcode': record[6]
+                }
+                )
 '''
 conn.commit()
 conn.close()
@@ -85,21 +47,24 @@ def query_database():
     # create cursor to database
     cursor = conn.cursor()
 
-    cursor.execute("SELECT rowid, * FROM customers")
+    # Create a cursor instance
+    cursor = conn.cursor()
 
+    cursor.execute("SELECT rowid, * FROM customers")
     records = cursor.fetchall()
-    print(records)
+
+    # Add our data to the screen
     global count
     count = 0
 
     for record in records:
         if count % 2 == 0:
             my_tree.insert(parent='', index='end', iid=count, text='',
-                           values=(record[0], record[1], record[2], record[4], record[5], record[6], record[7]),
+                           values=(record[1], record[2], record[0], record[4], record[5], record[6], record[7]),
                            tags=('evenrow',))
         else:
             my_tree.insert(parent='', index='end', iid=count, text='',
-                           values=(record[0], record[1], record[2], record[4], record[5], record[6], record[7]),
+                           values=(record[1], record[2], record[0], record[4], record[5], record[6], record[7]),
                            tags=('oddrow',))
         # increment counter
         count += 1
@@ -107,10 +72,6 @@ def query_database():
     conn.commit()
     conn.close()
 
-
-root = Tk()
-root.title('CRM Project TreeBase')
-root.geometry("1500x500")
 
 # Add Some Style
 style = ttk.Style()
@@ -145,13 +106,13 @@ my_tree.pack()
 tree_scroll.config(command=my_tree.yview)
 
 # Define Our Columns
-my_tree['columns'] = ("ID", "First Name", "Last Name",  "Address", "City", "State", "Zipcode")
+my_tree['columns'] = ("First Name", "Last Name", "ID", "Address", "City", "State", "Zipcode")
 
 # Format Our Columns
 my_tree.column("#0", width=0, stretch=NO)
-my_tree.column("ID", anchor=CENTER, width=100)
 my_tree.column("First Name", anchor=W, width=140)
 my_tree.column("Last Name", anchor=W, width=140)
+my_tree.column("ID", anchor=CENTER, width=100)
 my_tree.column("Address", anchor=CENTER, width=140)
 my_tree.column("City", anchor=CENTER, width=140)
 my_tree.column("State", anchor=CENTER, width=140)
@@ -159,9 +120,9 @@ my_tree.column("Zipcode", anchor=CENTER, width=140)
 
 # Create Headings
 my_tree.heading("#0", text="", anchor=W)
-my_tree.heading("ID", text="ID", anchor=CENTER)
 my_tree.heading("First Name", text="First Name", anchor=W)
 my_tree.heading("Last Name", text="Last Name", anchor=W)
+my_tree.heading("ID", text="ID", anchor=CENTER)
 my_tree.heading("Address", text="Address", anchor=CENTER)
 my_tree.heading("City", text="City", anchor=CENTER)
 my_tree.heading("State", text="State", anchor=CENTER)
@@ -172,8 +133,8 @@ my_tree.tag_configure('oddrow', background="white")
 my_tree.tag_configure('evenrow', background="lightblue")
 
 # Add Record Entry Boxes
-data_frame = LabelFrame(root, text="Record".upper())
-data_frame.pack(expand=True, anchor=CENTER)
+data_frame = LabelFrame(root, text="Record")
+data_frame.pack(fill="x", expand="yes", padx=20)
 
 fn_label = Label(data_frame, text="First Name")
 fn_label.grid(row=0, column=0, padx=10, pady=10)
@@ -205,37 +166,10 @@ state_label.grid(row=1, column=4, padx=10, pady=10)
 state_entry = Entry(data_frame)
 state_entry.grid(row=1, column=5, padx=10, pady=10)
 
-zipcode_label = Label(data_frame, text="Zip code")
+zipcode_label = Label(data_frame, text="Zipcode")
 zipcode_label.grid(row=1, column=6, padx=10, pady=10)
 zipcode_entry = Entry(data_frame)
 zipcode_entry.grid(row=1, column=7, padx=10, pady=10)
-
-
-def clear_entries():
-    fn_entry.delete(0, END)
-    ln_entry.delete(0, END)
-    id_entry.delete(0, END)
-    address_entry.delete(0, END)
-    city_entry.delete(0, END)
-    state_entry.delete(0, END)
-    zipcode_entry.delete(0, END)
-
-
-def select_record(e):
-    clear_entries()
-
-    # Grab record number
-    selected = my_tree.focus()
-    # print(f"SELECTED, {selected}")
-    values = my_tree.item(selected, 'values')
-
-    fn_entry.insert(0, values[0])
-    ln_entry.insert(0, values[1])
-    id_entry.insert(0, values[2])
-    address_entry.insert(0, values[3])
-    city_entry.insert(0, values[4])
-    state_entry.insert(0, values[5])
-    zipcode_entry.insert(0, values[6])
 
 
 def move_up():
@@ -250,73 +184,180 @@ def move_down():
         my_tree.move(row, my_tree.parent(row), my_tree.index(row) + 1)
 
 
+# Remove one record
 def remove_one():
     x = my_tree.selection()[0]
     my_tree.delete(x)
 
     conn = sqlite3.connect('tree_crm.db')
 
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM customers WHERE oid=" + id_entry.get())
+    # Create a cursor instance
+    c = conn.cursor()
 
+    # Delete From Database
+    c.execute("DELETE from customers WHERE oid=" + id_entry.get())
+
+    # Commit changes
     conn.commit()
+
+    # Close our connection
     conn.close()
+
+    # Clear The Entry Boxes
     clear_entries()
 
-    messagebox.showinfo("Deleted", "The row selected has been deleted!")
+    # Add a little message box for fun
+    messagebox.showinfo("Deleted!", "Your Record Has Been Deleted!")
 
 
+# Remove Many records
 def remove_many():
-    x = my_tree.selection()
-    for o in x:
-        my_tree.delete(o)
+    # Add a little message box for fun
+    response = messagebox.askyesno("Attention", "This Will Delete EVERYTHING SELECTED From The Table\nAre You Sure?!")
 
-    clear_entries()
+    # Add logic for message box
+    if response == 1:
+        # Designate selections
+        x = my_tree.selection()
+
+        # Create List of ID's
+        ids_to_delete = []
+
+        # Add selections to ids_to_delete list
+        for record in x:
+            ids_to_delete.append(my_tree.item(record, 'values')[2])
+
+        # Delete From Treeview
+        for record in x:
+            my_tree.delete(record)
+
+        # Create a database or connect to one that exists
+        conn = sqlite3.connect('tree_crm.db')
+
+        # Create a cursor instance
+        cursor = conn.cursor()
+
+        # Delete Everything From The Table
+        cursor.executemany("DELETE FROM customers WHERE id = ?", [(a,) for a in ids_to_delete])
+
+        # Reset List
+        ids_to_delete = []
+
+        # Commit changes
+        conn.commit()
+
+        # Close our connection
+        conn.close()
+
+        # Clear entry boxes if filled
+        clear_entries()
 
 
+# Remove all records
 def remove_all():
-    for record in my_tree.get_children():
-        my_tree.delete(record)
+    # Add a little message box for fun
+    response = messagebox.askyesno("Attention!!", "This Will Delete EVERYTHING From The Table\nAre You Sure?!")
+
+    # Add logic for message box
+    if response == 1:
+        # Clear the Treeview
+        for record in my_tree.get_children():
+            my_tree.delete(record)
+
+        # Create a database or connect to one that exists
+        conn = sqlite3.connect('tree_crm.db')
+
+        # Create a cursor instance
+        c = conn.cursor()
+
+        # Delete Everything From The Table
+        c.execute("DROP TABLE customers")
+
+        # Commit changes
+        conn.commit()
+
+        # Close our connection
+        conn.close()
+
+        # Clear entry boxes if filled
+        clear_entries()
+
+        # Recreate The Table
+        create_table_again()
 
 
-def update():
+# Clear entry boxes
+def clear_entries():
+    # Clear entry boxes
+    fn_entry.delete(0, END)
+    ln_entry.delete(0, END)
+    id_entry.delete(0, END)
+    address_entry.delete(0, END)
+    city_entry.delete(0, END)
+    state_entry.delete(0, END)
+    zipcode_entry.delete(0, END)
+
+
+# Select Record
+def select_record(e):
+    # Clear entry boxes
+    fn_entry.delete(0, END)
+    ln_entry.delete(0, END)
+    id_entry.delete(0, END)
+    address_entry.delete(0, END)
+    city_entry.delete(0, END)
+    state_entry.delete(0, END)
+    zipcode_entry.delete(0, END)
+
+    # Grab record Number
     selected = my_tree.focus()
-    # update the record
+    # Grab record values
+    values = my_tree.item(selected, 'values')
+
+    # outpus to entry boxes
+    fn_entry.insert(0, values[0])
+    ln_entry.insert(0, values[1])
+    id_entry.insert(0, values[2])
+    address_entry.insert(0, values[3])
+    city_entry.insert(0, values[4])
+    state_entry.insert(0, values[5])
+    zipcode_entry.insert(0, values[6])
+
+
+# Update record
+def update():
+    # Grab the record number
+    selected = my_tree.focus()
+    # Update record
     my_tree.item(selected, text="", values=(
-        fn_entry.get(),
-        ln_entry.get(),
-        id_entry.get(),
-        address_entry.get(),
-        city_entry.get(),
-        state_entry.get(),
-        zipcode_entry.get(),
-    ))
+        fn_entry.get(), ln_entry.get(), id_entry.get(), address_entry.get(), city_entry.get(), state_entry.get(),
+        zipcode_entry.get(),))
 
     # Update the database
+    # Create a database or connect to one that exists
     conn = sqlite3.connect('tree_crm.db')
-    # create cursor to database
-    cursor = conn.cursor()
 
-    cursor.execute("""
-            UPDATE customers SET
-                first_name = :first,
-                last_name = :last,
-                address = :address,
-                city = :city,
-                state = :state,
-                zipcode = :zipcode 
-                
-                WHERE oid = :oid""",
-                   {
-                       'first': fn_entry.get(),
-                       'last': ln_entry.get(),
-                       'address': address_entry.get(),
-                       'city': city_entry.get(),
-                       'state': state_entry.get(),
-                       'zipcode': zipcode_entry.get(),
-                       'oid': id_entry.get()
-                   }
-                   )
+    # Create a cursor instance
+    c = conn.cursor()
+
+    c.execute("""UPDATE customers SET
+            first_name = :first,
+            last_name = :last,
+            address = :address,
+            city = :city,
+            state = :state,
+            zipcode = :zipcode
+    
+            WHERE oid = :oid""",
+              {
+                  'first': fn_entry.get(),
+                  'last': ln_entry.get(),
+                  'address': address_entry.get(),
+                  'city': city_entry.get(),
+                  'state': state_entry.get(),
+                  'zipcode': zipcode_entry.get(),
+                  'oid': id_entry.get(),
+              })
 
     conn.commit()
     conn.close()
@@ -334,26 +375,50 @@ def add():
         # create cursor to database
         cursor = conn.cursor()
 
-        cursor.execute("INSERT INTO customers VALUES (:id, :first,:last,:address,:city,:state,:zipcode)",
-                       {
-                           'id': id_entry.get(),
-                           'first': fn_entry.get(),
-                           'last': ln_entry.get(),
-                           'address': address_entry.get(),
-                           'city': city_entry.get(),
-                           'state': state_entry.get(),
-                           'zipcode': zipcode_entry.get(),
-                       })
+
+        cursor.execute("INSERT INTO customers VALUES (:first, :last, :id, :address, :city, :state, :zipcode)",
+              {
+                  'first': fn_entry.get(),
+                  'last': ln_entry.get(),
+                  'id': id_entry.get(),
+                  'address': address_entry.get(),
+                  'city': city_entry.get(),
+                  'state': state_entry.get(),
+                  'zipcode': zipcode_entry.get(),
+              })
+
+        # Commit changes
         conn.commit()
+
+        # Close our connection
         conn.close()
 
         clear_entries()
 
-        my_tree.delete(*my_tree.get_children())
+    my_tree.delete(*my_tree.get_children())
 
-        query_database()
-    else:
-        print("One of your records is empty!?>>>>>")
+    query_database()
+
+
+def create_table_again():
+    # Create a database or connect to one that exists
+    connection = sqlite3.connect('tree_crm.db')
+
+    # Create a cursor instance
+    c = conn.cursor()
+
+    # Create Table
+    c.execute("""CREATE TABLE if not exists customers (
+            first_name text,
+            last_name text,
+            id integer,
+            address text,
+            city text,
+            state text,
+            zipcode text)
+            """)
+
+    connection.commit()
 
 
 # Create Buttons
