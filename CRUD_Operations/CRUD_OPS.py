@@ -20,13 +20,13 @@ except Exception as e:
     print("Something went wrong:", e)
 
 py = sys.executable
-
+blue_bg = '#00CFFF'
 
 class MainWindow(Tk):
     def __init__(self):
         super().__init__()
         self.configure(bg='#00CFFF')
-        self.canvas = Canvas(width=1366, height=768, bg='#00CFFF')
+        self.canvas = Canvas(width=1366, height=768, bg=blue_bg)
         self.canvas.pack()
         self.maxsize(1320, 768)
         self.minsize(1320, 768)
@@ -109,10 +109,10 @@ class MainWindow(Tk):
         def check():
 
             # label and input box
-            self.label3 = Label(self, text='CRUD Operation In Python', fg='black', bg="gray",
+            self.label3 = Label(self, text='CRUD Operation In Python', fg='black', bg=blue_bg,
                                 font=('Courier new', 30, 'bold'))
             self.label3.place(x=350, y=22)
-            self.label6 = Label(self, text="STUDENT INFORMATION DETAILS", bg="gray",
+            self.label6 = Label(self, text="STUDENT INFORMATION DETAILS", bg=blue_bg,
                                 font=('Courier new', 15, 'underline', 'bold'))
             self.label6.place(x=560, y=300)
 
