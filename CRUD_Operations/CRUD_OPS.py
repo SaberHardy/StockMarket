@@ -22,6 +22,7 @@ except Exception as e:
 py = sys.executable
 blue_bg = '#00CFFF'
 
+
 class MainWindow(Tk):
     def __init__(self):
         super().__init__()
@@ -39,6 +40,7 @@ class MainWindow(Tk):
         # calling scripts to execute
 
         def update_fun():
+            print(os.system('%s %s' % (py, 'Update.py')))
             os.system('%s %s' % (py, 'Update.py'))
 
         def delete_fun():

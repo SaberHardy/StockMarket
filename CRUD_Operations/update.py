@@ -73,6 +73,14 @@ class Database:
                                       command=self.update)
         self.add_to_database.place(x=380, y=420)
 
+    def clear_entries(self):
+        self.first_entry.delete(0, END)
+        self.last_entry.delete(0, END)
+        self.gender_entry.delete(0, END)
+        self.address_entry.delete(0, END)
+        self.contact_entry.delete(0, END)
+        self.course_entry.delete(0, END)
+
     def search(self, *args, **kwargs):
         cursor.execute("SELECT * FROM tbl_student WHERE student_id=%s", [self.id_entry.get()])
         results = cursor.fetchall()
@@ -88,23 +96,15 @@ class Database:
 
         connection.commit()
 
+        # Clear inputs before update
+        self.clear_entries()
+
         # insert into entries to update
-        self.first_entry.delete(0, END)
         self.first_entry.insert(0, str(self.n1))
-
-        self.last_entry.delete(0, END)
         self.last_entry.insert(0, str(self.n2))
-
-        self.gender_entry.delete(0, END)
         self.gender_entry.insert(0, str(self.n3))
-
-        self.address_entry.delete(0, END)
         self.address_entry.insert(0, str(self.n4))
-
-        self.contact_entry.delete(0, END)
         self.contact_entry.insert(0, str(self.n5))
-
-        self.course_entry.delete(0, END)
         self.course_entry.insert(0, str(self.n6))
 
     def update(self, *args, **kwargs):
@@ -120,7 +120,7 @@ class Database:
                        "LastName=%s,"
                        "Gender=%s,"
                        "Address=%s,"
-                       "Contact=%s,"
+                       "ContactNumber=%s,"
                        "Course=%s WHERE student_id=%s",
                        [self.u1, self.u2, self.u3, self.u4, self.u5, self.u6, self.id_entry.get()]
                        )
