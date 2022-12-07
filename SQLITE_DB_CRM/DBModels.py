@@ -14,7 +14,9 @@ tree_frame.pack(pady=10)
 tree_scroll = Scrollbar(tree_frame)
 tree_scroll.pack(side=RIGHT, fill=Y)
 
-my_tree = ttk.Treeview(tree_frame, yscrollcommand=tree_scroll.set, selectmode="extended")
+my_tree = ttk.Treeview(tree_frame,
+                       yscrollcommand=tree_scroll.set,
+                       selectmode="extended")
 my_tree.pack()
 tree_scroll.config(command=my_tree.yview)
 

@@ -98,7 +98,7 @@ class MainWindow(Tk):
         self.horizontalScrollbar.place(x=200, y=720, width=955)
         ttk.Style().configure("Treeview", font=('Times new Roman', 15))
 
-        def ser():
+        def retrieve_all_rows():
             try:
                 connection = mysql.connector.connect(
                     host='localhost',
@@ -116,8 +116,8 @@ class MainWindow(Tk):
                                              text=row[0],
                                              values=(row[1], row[2], row[3], row[4], row[5], row[6]))
 
-                    else:
-                        messagebox.showinfo("Error", "No students to display!!!")
+                else:
+                    messagebox.showinfo("Error", "No students to display!!!")
             except Error:
                 messagebox.showerror("Error", "Something Goes Wrong!!!")
 
@@ -133,7 +133,7 @@ class MainWindow(Tk):
 
             self.button = BT(self, text='View Students', width=200, bg='white',
                              font=('Courier new', 20),
-                             command=ser)
+                             command=retrieve_all_rows)
             self.button.place(x=200, y=250)
             self.button = BT(self, text='Add Student', width=200, bg='green',
                              font=('Courier new', 20),
