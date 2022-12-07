@@ -17,7 +17,7 @@ try:
     cursor = connection.cursor()
 
 except Exception as err:
-    print("Your Database is closed, Check it....", err)
+    messagebox.showerror('Database Error', 'please, connect your sqlDatabase...')
 
 py = sys.executable
 blue_bg = '#00CFFF'
@@ -94,7 +94,7 @@ class MainWindow(Tk):
         self.listTree.column('Course', width=125, minwidth=125, anchor='center')
 
         self.listTree.place(x=200, y=360)
-        self.verticalScrollbar.place(x=1150, y=361, height=360)
+        self.verticalScrollbar.place(x=1152, y=361, height=374)
         self.horizontalScrollbar.place(x=200, y=720, width=955)
         ttk.Style().configure("Treeview", font=('Times new Roman', 15))
 
@@ -124,29 +124,29 @@ class MainWindow(Tk):
         def check():
 
             # label and input box
-            self.label3 = Label(self, text='CRUD Operation In Python', fg='black', bg=blue_bg,
+            self.label3 = Label(self, text='CRUD Operations In Python', fg='black', bg=blue_bg,
                                 font=('Courier new', 30, 'bold'))
-            self.label3.place(x=350, y=22)
+            self.label3.place(x=450, y=100)
             self.label6 = Label(self, text="STUDENT INFORMATION DETAILS", bg=blue_bg,
-                                font=('Courier new', 15, 'underline', 'bold'))
-            self.label6.place(x=560, y=300)
+                                font=('Courier new', 25, 'underline', 'bold'))
+            self.label6.place(x=450, y=300)
 
-            self.button = BT(self, text='View Student(s)', width=250, bg='white',
-                             font=('Courier new', 10),
+            self.button = BT(self, text='View Students', width=200, bg='white',
+                             font=('Courier new', 20),
                              command=ser)
-            self.button.place(x=240, y=250)
-            self.button = BT(self, text='Add Student', width=250, bg='green',
-                             font=('Courier new', 10),
+            self.button.place(x=200, y=250)
+            self.button = BT(self, text='Add Student', width=200, bg='green',
+                             font=('Courier new', 20),
                              command=add_fun)
-            self.button.place(x=520, y=250)
-            self.brt = BT(self, text="Update Student", width=150, bg='orange',
-                          font=('Courier new', 10),
+            self.button.place(x=470, y=250)
+            self.brt = BT(self, text="Update Student", width=200, bg='orange',
+                          font=('Courier new', 20),
                           command=update_fun)
-            self.brt.place(x=800, y=250)
-            self.brt = BT(self, text="Delete Student", width=150, bg='red',
-                          font=('Courier new', 10),
+            self.brt.place(x=720, y=250)
+            self.brt = BT(self, text="Delete Student", width=200, bg='red',
+                          font=('Courier new', 20, 'bold'),
                           command=delete_fun)
-            self.brt.place(x=1000, y=250)
+            self.brt.place(x=980, y=250)
 
         check()
 
