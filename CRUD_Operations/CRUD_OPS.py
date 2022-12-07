@@ -36,7 +36,7 @@ class MainWindow(Tk):
         self.title('CRUD Operation In Python')
 
         self.style = ttk.Style()
-        self.style.theme_use('default')
+        self.style.theme_use('aqua')
         self.style.configure("Treeview",
                              background="#D3D3D3",
                              foreground="black",
@@ -48,6 +48,29 @@ class MainWindow(Tk):
         self.a = StringVar()
         self.b = StringVar()
         self.mymenu = Menu(self)
+
+        def retrieve_all_rows():
+            try:
+                connection = mysql.connector.connect(
+                    host='localhost',
+                    database='cruddb',
+                    user='root',
+                    password='')
+                cursor = connection.cursor()
+                cursor.execute("Select * from tbl_student")
+                pc = cursor.fetchall()
+                print(f"The pc contains: {pc}")
+                if pc:
+                    self.listTree.delete(*self.listTree.get_children())
+                    for row in pc:
+                        self.listTree.insert("", 'end',
+                                             text=row[0],
+                                             values=(row[1], row[2], row[3], row[4], row[5], row[6]))
+
+                else:
+                    messagebox.showinfo("Error", "No students to display!!!")
+            except Error:
+                messagebox.showerror("Error", "Something Goes Wrong!!!")
 
         # calling scripts to execute
 
@@ -98,29 +121,6 @@ class MainWindow(Tk):
         self.horizontalScrollbar.place(x=200, y=720, width=955)
         ttk.Style().configure("Treeview", font=('Times new Roman', 15))
 
-        def retrieve_all_rows():
-            try:
-                connection = mysql.connector.connect(
-                    host='localhost',
-                    database='cruddb',
-                    user='root',
-                    password='')
-                cursor = connection.cursor()
-                cursor.execute("Select * from tbl_student")
-                pc = cursor.fetchall()
-                print(f"The pc contains: {pc}")
-                if pc:
-                    self.listTree.delete(*self.listTree.get_children())
-                    for row in pc:
-                        self.listTree.insert("", 'end',
-                                             text=row[0],
-                                             values=(row[1], row[2], row[3], row[4], row[5], row[6]))
-
-                else:
-                    messagebox.showinfo("Error", "No students to display!!!")
-            except Error:
-                messagebox.showerror("Error", "Something Goes Wrong!!!")
-
         def check():
 
             # label and input box
@@ -147,6 +147,8 @@ class MainWindow(Tk):
                           font=('Courier new', 20, 'bold'),
                           command=delete_fun)
             self.brt.place(x=980, y=250)
+
+        retrieve_all_rows()
 
         check()
 
