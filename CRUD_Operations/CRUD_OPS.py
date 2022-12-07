@@ -16,23 +16,35 @@ try:
                                          )
     cursor = connection.cursor()
 
-except Exception as e:
-    print("Something went wrong:", e)
+except Exception as err:
+    print("Your Database is closed, Check it....", err)
 
 py = sys.executable
 blue_bg = '#00CFFF'
+red_bg = 'E60000'
 
 
 class MainWindow(Tk):
     def __init__(self):
         super().__init__()
-        self.configure(bg='#00CFFF')
+
         self.canvas = Canvas(width=1366, height=768, bg=blue_bg)
         self.canvas.pack()
         self.maxsize(1320, 768)
         self.minsize(1320, 768)
         self.state('zoomed')
         self.title('CRUD Operation In Python')
+
+        self.style = ttk.Style()
+        self.style.theme_use('default')
+        self.style.configure("Treeview",
+                             background="#D3D3D3",
+                             foreground="black",
+                             rowheight=25,
+                             fieldbackground="#D3D3D3")
+        self.style.map('Treeview',
+                       background=[('selected', "#347083")])
+
         self.a = StringVar()
         self.b = StringVar()
         self.mymenu = Menu(self)
@@ -49,12 +61,13 @@ class MainWindow(Tk):
         def add_fun():
             os.system('%s %s' % (py, 'Add.py'))
 
+        columns = ['First Name', 'Last Name', 'Gender',
+                   'Address', 'Contact Number', 'Course']
         # Creating Table
-        self.listTree = ttk.Treeview(self,
-                                     height=14,
-                                     columns=('First Name', 'Last Name', 'Gender',
-                                              'Address', 'Contact Number', 'Course')
-                                     )
+        self.listTree = ttk.Treeview(self, height=14, columns=columns)
+        self.listTree.tag_configure('oddrow', background="white")
+        self.listTree.tag_configure('evenrow', background="lightblue")
+
         self.verticalScrollbar = ttk.Scrollbar(self, orient="vertical", command=self.listTree.yview)
         self.horizontalScrollbar = ttk.Scrollbar(self, orient="horizontal", command=self.listTree.xview)
         self.listTree.configure(yscrollcommand=self.verticalScrollbar.set, xscrollcommand=self.horizontalScrollbar.set)
@@ -81,8 +94,8 @@ class MainWindow(Tk):
         self.listTree.column('Course', width=125, minwidth=125, anchor='center')
 
         self.listTree.place(x=200, y=360)
-        self.verticalScrollbar.place(x=1150, y=361, height=287)
-        self.horizontalScrollbar.place(x=200, y=650, width=966)
+        self.verticalScrollbar.place(x=1150, y=361, height=360)
+        self.horizontalScrollbar.place(x=200, y=720, width=955)
         ttk.Style().configure("Treeview", font=('Times new Roman', 15))
 
         def ser():
